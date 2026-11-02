@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Visitor counter</title>
+<style>
+body{background:#fff;color:#000;font-family:Arial,Helvetica,sans-serif;margin:0;padding:40px 16px;text-align:center}
+#visitor{font-size:40px;margin:40px 0 50px}
+h2{font-size:20px;font-weight:normal;margin:0 0 6px}
+.meta{color:#666;font-size:13px;margin:0 0 20px}
+#cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;max-width:1100px;margin:0 auto;text-align:left}
+.card{border:1px solid #ddd;border-radius:6px;padding:14px}
+.card h3{font-size:15px;margin:0 0 10px}
+.empty{color:#888;font-size:14px}
+.row{display:flex;align-items:center;font-size:13px;margin:4px 0}
+.row .n{width:40%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-right:6px}
+.row .b{flex:1;background:#f0f0f0;height:10px;margin-right:6px}
+.row .b div{background:#444;height:10px}
+.row .c{width:48px;text-align:right;color:#444}
+svg{width:100%;height:120px;display:block}
+.axis{display:flex;justify-content:space-between;color:#888;font-size:11px}
+</style>
+</head>
+<body>
+<p id="visitor">You are visitor #…</p>
+<h2>Visitor insights</h2>
+<p class="meta" id="meta"></p>
+<div id="cards"></div>
+<script data-goatcounter="https://chiasonsmoke.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+<script>
+(function () {
+  var el = document.getElementById('visitor');
+  var url = 'https://chiasonsmoke.goatcounter.com/counter/%2F.json';
+  function attempt(n) {
+    fetch(url).then(function (r) {
+      if (!r.ok) throw new Error('bad status');
+      return r.json();
+    }).then(function (d) {
+      var num = String(d.count || '').replace(/\D/g, '');
+      if (!num) throw new Error('no count');
+      el.textContent = 'You are visitor #' + num + ' to land here';
+    }).catch(function () {
+      if (n < 2) setTimeout(function () { attempt(n + 1); }, 1200);
+      else el.textContent = 'You are a visitor to land here';
+    });
+  }
+  window.addEventListener('load', function () {
+    setTimeout(function () { attempt(1); }, 1200);
+  });
+})();
+
+(function () {
+  var cards = document.getElementById('cards');
+  var SVGNS = 'http://www.w3.org/2000/svg';
+  function mk(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text != null) e.textContent = text;
+    return e;
+  }
+  function card(title) {
+    var c = mk('div', 'card');
+    c.appendChild(mk('h3', null, title));
+    cards.appendChild(c);
+    return c;
+  }
+  function num(v) { v = Number(v); return isFinite(v) && v > 0 ? v : 0; }
+  function list(title, arr) {
+    var c = card(title);
+    arr = Array.isArray(arr) ? arr.filter(function (x) { return x && num(x.count) > 0; }) : [];
+    if (!arr.length) { c.appendChild(mk('div', 'empty', 'No data yet')); return; }
+    arr.sort(function (a, b) { return num(b.count) - num(a.count); });
+    arr = arr.slice(0, 10);
+    var max = num(arr[0].count) || 1;
+    arr.forEach(function (x) {
+      var r = mk('div', 'row');
+      var label = String(x.name || '').trim() || '(unknown)';
+      var n = mk('span', 'n', label); n.title = label;
+      var b = mk('span', 'b'); var f = mk('div');
+      f.style.width = (num(x.count) / max * 100) + '%';
+      b.appendChild(f);
+      r.appendChild(n); r.appendChild(b); r.appendChild(mk('span', 'c', String(num(x.count))));
+      c.appendChild(r);
+    });
+  }
+  function bars(title, items, first, last) {
+    var c = card(title);
+    var total = items.reduce(function (s, x) { return s + x.v; }, 0);
+    if (!items.length || !total) { c.appendChild(mk('div', 'empty', 'No data yet')); return; }
+    var max = Math.max.apply(null, items.map(function (x) { return x.v; })) || 1;
+    var svg = document.createElementNS(SVGNS, 'svg');
+    var w = 100 / items.length;
+    svg.setAttribute('viewBox', '0 0 100 100');
+    svg.setAttribute('preserveAspectRatio', 'none');
+    items.forEach(function (x, i) {
+      var h = x.v / max * 100;
+      var r = document.createElementNS(SVGNS, 'rect');
+      r.setAttribute('x', i * w + w * 0.1);
+      r.setAttribute('width', w * 0.8);
+      r.setAttribute('y', 100 - h);
+      r.setAttribute('height', h);
+      r.setAttribute('fill', '#444');
+      var t = document.createElementNS(SVGNS, 'title');
+      t.textContent = x.label + ': ' + x.v;
+      r.appendChild(t);
+      svg.appendChild(r);
+    });
+    c.appendChild(svg);
+    var ax = mk('div', 'axis');
+    ax.appendChild(mk('span', null, first));
+    ax.appendChild(mk('span', null, last));
+    c.appendChild(ax);
+  }
+  function render(d) {
+    d = d && typeof d === 'object' ? d : {};
+    var t = d.total || {};
+    var meta = document.getElementById('meta');
+    var parts = ['Total visits: ' + num(t.visits), 'Unique: ' + num(t.unique)];
+    if (d.updated) {
+      var dt = new Date(d.updated);
+      if (!isNaN(dt)) parts.push('Updated: ' + dt.toLocaleString());
+    }
+    meta.textContent = parts.join(' \u00b7 ');
+
+    var daily = (Array.isArray(d.daily) ? d.daily : []).filter(function (x) { return x && x.day; })
+      .sort(function (a, b) { return a.day < b.day ? -1 : 1; }).slice(-30)
+      .map(function (x) { return { label: String(x.day), v: num(x.visits) }; });
+    bars('Visits per day (last 30 days)', daily, daily.length ? daily[0].label : '', daily.length ? daily[daily.length - 1].label : '');
+
+    var hv = [], has = false;
+    for (var h = 0; h < 24; h++) hv.push({ label: h + ':00', v: 0 });
+    (Array.isArray(d.hourly) ? d.hourly : []).forEach(function (x) {
+      var k = Number(x && x.hour);
+      if (k >= 0 && k < 24) { hv[k].v += num(x.visits); has = true; }
+    });
+    bars('Visits by hour (America/Chicago)', has ? hv : [], '0:00', '23:00');
+
+    list('Top referring sites', d.referrers);
+    list('Countries', d.countries);
+    list('Browsers', d.browsers);
+    list('Operating systems', d.systems);
+    list('Devices / screen sizes', d.devices);
+    if (Array.isArray(d.regions) && d.regions.length) list('States / regions', d.regions);
+  }
+  fetch('stats.json?t=' + Date.now(), { cache: 'no-store' })
+    .then(function (r) { if (!r.ok) throw new Error('missing'); return r.json(); })
+    .then(render)
+    .catch(function () { render({}); });
+})();
+</script>
+</body>
+</html>
