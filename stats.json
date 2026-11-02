@@ -1,1 +1,58 @@
-{"updated":"","total":{"visits":0,"unique":0},"daily":[],"hourly":[],"referrers":[],"countries":[],"browsers":[],"systems":[],"devices":[],"regions":[]}
+{
+ "updated": "2026-11-02T00:12:58Z",
+ "total": {
+  "visits": 2,
+  "unique": 0
+ },
+ "daily": [
+  {
+   "day": "2026-11-01",
+   "visits": 2
+  }
+ ],
+ "hourly": [
+  {
+   "hour": 13,
+   "visits": 2
+  }
+ ],
+ "referrers": [
+  {
+   "name": "Direct",
+   "count": 1
+  },
+  {
+   "name": "Google",
+   "count": 1
+  }
+ ],
+ "countries": [
+  {
+   "name": "United States",
+   "count": 2
+  }
+ ],
+ "browsers": [
+  {
+   "name": "Chrome",
+   "count": 2
+  }
+ ],
+ "systems": [
+  {
+   "name": "Linux",
+   "count": 1
+  },
+  {
+   "name": "Windows",
+   "count": 1
+  }
+ ],
+ "devices": [
+  {
+   "name": "Desktop",
+   "count": 2
+  }
+ ],
+ "regions": []
+}
