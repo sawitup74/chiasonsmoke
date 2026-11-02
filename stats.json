@@ -1,25 +1,25 @@
 {
- "updated": "2026-11-02T00:27:41Z",
+ "updated": "2026-11-02T00:43:52Z",
  "total": {
-  "visits": 4,
-  "unique": 4
+  "visits": 8,
+  "unique": 8
  },
  "daily": [
   {
    "day": "2026-11-01",
-   "visits": 4
+   "visits": 8
   }
  ],
  "hourly": [
   {
    "hour": 18,
-   "visits": 4
+   "visits": 8
   }
  ],
  "referrers": [
   {
    "name": "Direct",
-   "count": 3
+   "count": 7
   },
   {
    "name": "Google",
@@ -32,30 +32,58 @@
    "count": 3
   },
   {
+   "name": "Netherlands",
+   "count": 2
+  },
+  {
+   "name": "Canada",
+   "count": 1
+  },
+  {
    "name": "Switzerland",
+   "count": 1
+  },
+  {
+   "name": "Montenegro",
    "count": 1
   }
  ],
  "browsers": [
   {
    "name": "Chrome",
-   "count": 4
+   "count": 7
+  },
+  {
+   "name": "Safari",
+   "count": 1
   }
  ],
  "systems": [
+  {
+   "name": "Windows",
+   "count": 5
+  },
   {
    "name": "Linux",
    "count": 2
   },
   {
-   "name": "Windows",
-   "count": 2
+   "name": "iOS",
+   "count": 1
   }
  ],
  "devices": [
   {
+   "name": "Phone",
+   "count": 1
+  },
+  {
+   "name": "Tablet",
+   "count": 1
+  },
+  {
    "name": "Desktop",
-   "count": 4
+   "count": 6
   }
  ],
  "regions": []
